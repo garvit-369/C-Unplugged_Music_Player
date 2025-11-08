@@ -1,4 +1,4 @@
-# Assignment 2: C-Unplugged
+# C-Unplugged: Music Player
 
 <pre>
 This is my first-ever project.
