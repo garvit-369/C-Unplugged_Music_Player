@@ -28,6 +28,7 @@ int main() {
 
         if(strncmp(token,"QUIT",4)==0) {
             printf("Thanks for using!!\n\n");
+            printf("-------------------------------------------------------------------------------------------------------------\n\n");
             break;
         }
 
@@ -126,7 +127,10 @@ int main() {
                         strcat(location,".csv");
                         FILE *album=fopen(location,"r");
                         if(check_presence(album,song_name)==0) {printf("No such song found in %s.\n",album_name);}
-                        else {remove_item(location,song_name);printf("Successfully Executed...\n");}
+                        else {
+                            remove_item(location,song_name);
+                            printf("Successfully Executed...\n");
+                        }
                         fclose(album);
                     }
                 }
@@ -214,6 +218,7 @@ int main() {
         }
 
         else printf("Invalid Input\n");
+        printf("-------------------------------------------------------------------------------------------------------------\n");
     }
 
 
