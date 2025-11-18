@@ -6,25 +6,25 @@
 
 
 void print_album_list(FILE *file) {
-    fseek(file, 0L, SEEK_SET);
+    fseek(file,0L,SEEK_SET);
 
     char step[500];
     int lines_read = 0;
+    int count=1;
+    while (fgets(step,500,file) != NULL) {
 
-    while (fgets(step, 500, file) != NULL) {
-
-        if (strlen(step) <= 1) {continue;}
-
+        if (strlen(step)<=1) {continue;}
+        char *token=strtok(step,",\n");
         lines_read++;
-        printf("%s", step);
+        printf("%d) %s\n",count,token);
+        count++;
     }
 
-    if (lines_read == 0) {
+    if (lines_read==0) {
         printf("No Albums Found!\n");
     }
 
     printf("\n");
-    fseek(file, 0L, SEEK_END);
 }
 
 
@@ -35,7 +35,7 @@ void print_list(FILE *file) {
 
     char step[500];
     int lines_read = 0;
-
+    int count=1;
     while (fgets(step, 500, file) != NULL) {
 
         if (strlen(step) <= 1) {continue;}
@@ -53,7 +53,8 @@ void print_list(FILE *file) {
 
         int duration = atoi(duration_str);
 
-        printf("%s\t\t%s\t\t%d\n", name, artist, duration);
+        printf("%d) %s\t\t%s\t\t%d\n", count, name, artist, duration);
+        count++;
     }
 
     if (lines_read == 0) {
@@ -82,100 +83,174 @@ int check_presence(FILE *file, char song[]) {
 }
 
 
-void append_list(FILE *library, FILE *list, char song[]) {
+void append_list(FILE *library, FILE *list, int song_index) {
     fseek(library, 0L, SEEK_SET);
     
-    if (check_presence(list, song)==1) {
-        printf("Song already present!\n");
-        return;
-    }
-    
+    int current_index = 1;
     char dum[500];
-    char dum_copy[500];
-    int flag=0;
-    
-    while (fgets(dum, 500, library) != NULL) {
-        strcpy(dum_copy,dum); 
+    int found=0;
 
-        char *token=strtok(dum,",\n");
-        if (token != NULL && strcmp(token,song)==0) {flag=1;break;}
+    while (fgets(dum, 500, library)!=NULL) {        
+        if (current_index==song_index) {
+            found=1;
+            break;
+        }
+        current_index++;
     }
-
-    if (flag==0) {
-        printf("Song not present in Library!\n");
-        return;
-    }
+    if(found==0) {printf("Song not found!!\n");return;}
 
     fseek(list, 0L, SEEK_END);
-    fprintf(list, "%s", dum_copy);
+    fprintf(list, "%s", dum);
     fflush(list);
+    printf("\nSuccessfully Executed!!\n");
 }
 
+FILE *open_album_from_index(FILE *album_list, int album_index) {
+    fseek(album_list, 0L, SEEK_SET);
 
-void append_album_playlist(FILE *playlist,FILE *album) {
-    fseek(playlist, 0L, SEEK_SET);
-    fseek(album, 0L, SEEK_SET);
-
+    int current_index = 1;
     char dum[500];
+    int found=0;
+
+    while (fgets(dum, 500, album_list)!=NULL) {        
+        if (current_index==album_index) {
+            found=1;
+            break;
+        }
+        current_index++;
+    }
+    if(found==0) {printf("Album not found!!\n");return NULL;}
+
+    char location[270] = "src/albums/";
+    char unique_filename[100];
+    char *album_name=strtok(dum,",\n");
+    char *id=strtok(NULL,",\n");
+    sprintf(unique_filename, "%s#%s.csv",album_name,id);
+    strcat(location, unique_filename);
+    return fopen(location, "r+");
+}
+
+void album_location_from_index(FILE *album_list, int album_index, char *location) {
+    fseek(album_list, 0L, SEEK_SET);
+
+    int current_index = 1;
+    char dum[500];
+    int found=0;
+
+    while (fgets(dum, 500, album_list)!=NULL) {        
+        if (current_index==album_index) {
+            found=1;
+            break;
+        }
+        current_index++;
+    }
+    if(found==0) {printf("Album not found!!\n");return;}
+
+    char unique_filename[100];
+    char *album_name=strtok(dum,",\n");
+    char *id=strtok(NULL,",\n");
+    sprintf(unique_filename, "%s#%s.csv",album_name,id);
+    strcat(location, unique_filename);
+}
+
+void item_name_from_index(FILE *album_list, int album_index, char *name) {
+    fseek(album_list, 0L, SEEK_SET);
+
+    int current_index = 1;
+    char dum[500];
+    int found=0;
+
+    while (fgets(dum, 500, album_list)!=NULL) {        
+        if (current_index==album_index) {
+            found=1;
+            break;
+        }
+        current_index++;
+    }
+    if(found==0) {printf("Item not found!!\n");return;}
+
+    char unique_filename[100];
+    char *album_name=strtok(dum,",\n");
+    sprintf(unique_filename, "%s",album_name);
+    strcat(name, unique_filename);
+}
+
+void append_album_playlist(FILE *playlist,FILE *album_list,int album_index) {
+    FILE* fptr = open_album_from_index(album_list,album_index);
+    fseek(fptr, 0L, SEEK_SET);
     char dum_copy[500];
-
-    while(fgets(dum,500,album)!=NULL) {
-        strcpy(dum_copy,dum);
-        char *tok=strtok(dum,",");
-        
-        if (check_presence(playlist, tok)==1) continue;
-
+    while(fgets(dum_copy,500,fptr)!=NULL) {
         fseek(playlist,0L,SEEK_END);
         fprintf(playlist, "%s", dum_copy);
     }
     fflush(playlist);
-
+    fclose(fptr);
+    printf("\nSuccessfully Executed!!\n");
 }
 
 
 
-
-
-void remove_item(char *list_file_name, char item[]) {
+void remove_song(char *list_file_name, int song_index) {
     FILE *tmp=fopen("src/temp.txt", "w"); 
     FILE *list=fopen(list_file_name,"r");
 
+    int current_index = 1;
     char dum[500];
-    int item_found = 0;
+    int found=0;
 
-    while (fgets(dum,500,list)!=NULL) {
-        
+    while (fgets(dum, 500, list) != NULL) {
         char dum_copy[500];
         strcpy(dum_copy, dum); 
         
-        char *token = strtok(dum,",\n");
-
-        if (token != NULL && strcmp(token, item) == 0) {
-            item_found = 1;
+        if (current_index==song_index) {
+            found = 1;
         } else {
-            fputs(dum_copy,tmp);
+            fputs(dum_copy, tmp);
         }
+        current_index++;
     }
     fclose(tmp);
     fclose(list);
 
-    if (item_found==1) {
+    if (found==1) {
         remove(list_file_name);                 
-        rename("src/temp.txt", list_file_name);   
-        printf("Removed %s successfully!\n", item);
+        rename("src/temp.txt", list_file_name);
+        printf("\nSuccessfully Executed!!\n");   
     } else {
         remove("src/temp.txt");
-        printf("%s was not present.\n", item);
+        printf("Item not found in the list!!\n");
     }
 }
 
 void create_album(FILE *album_list,char album_name[]) {
-    fseek(album_list,0L,SEEK_END);
-    fprintf(album_list,"%s\n",album_name);
+    fseek(album_list,0L,SEEK_SET);
+
+    char line[500];
+    int id=0;
+    
+    while (fgets(line, 500, album_list)!=NULL) {
+        char temp_line[500];
+        strcpy(temp_line,line);
+        char *token = strtok(temp_line,",\n");
+        if (token!=NULL && strcmp(token,album_name)==0) {
+            token=strtok(NULL, ",\n");
+            if (token!=NULL) {
+                int current_id = atoi(token);
+                if (current_id > id) {
+                    id = current_id;
+                }
+            }
+        }
+    }
+    id++;
+    
+    fseek(album_list, 0L, SEEK_END);
+    fprintf(album_list, "%s,%d\n", album_name,id);
     fflush(album_list);
-    char location[270]="src/albums/";
-    strcat(location,album_name);
-    strcat(location,".csv");
-    FILE* fptr=fopen(location,"w");
+    char location[270] = "src/albums/";
+    char unique_filename[100];
+    sprintf(unique_filename, "%s#%d.csv",album_name,id);
+    strcat(location, unique_filename);
+    FILE* fptr = fopen(location, "w");
     fclose(fptr);
 }

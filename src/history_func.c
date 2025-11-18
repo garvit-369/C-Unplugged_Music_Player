@@ -13,22 +13,7 @@ void print_log(FILE *history) {
 }
 
 void add_log(FILE *history, char str[]) {
-    char dum[strlen(str)+1];
-    strcpy(dum,str);
-    char *cmnd=strtok(dum," ");
-    if(strcmp(cmnd, "CREATE") == 0 || strcmp(cmnd, "APPEND") == 0 || 
-        strcmp(cmnd, "REMOVE") == 0 || strcmp(cmnd, "DELETE") == 0 || 
-        strcmp(cmnd, "ADD") == 0) {fputs("[COMMAND]\t",history);}
-
-    else if (strcmp(cmnd, "PLAY") == 0 || strcmp(cmnd, "NEXT") == 0 || 
-             strcmp(cmnd, "PREVIOUS") == 0 || strcmp(cmnd, "REPLAY") == 0)
-            {fputs("[PLAY]\t",history);}
-
-    else if (strcmp(cmnd,"EXIT")==0) {fputs("[EXIT]\t",history);}
-    else if (strcmp(cmnd,"QUIT")==0) {fflush(history);return;}
-    else {printf("[INVALID INPUT]\n");fflush(history);return;}
-
+    fseek(history,0L,SEEK_END);
+    fprintf(history,"%s\n",str);
     fflush(history);
-
-    fprintf(history,"%s",str);
 }
