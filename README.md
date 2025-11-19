@@ -1,7 +1,7 @@
 # C-Unplugged: Music Player
 
 ## Instructions to run program:
-
+<pre>
 *To run:
 1) make
 2) ./music
@@ -11,3 +11,5 @@
 2) Album -> Each album will have multiple songs, and multiple albums are allowed based on taste of the user.
 3) Playlist -> This will be a temporary data (or Queue).
 4) Album name has no spaces.
+
+</pre>
