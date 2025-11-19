@@ -57,15 +57,16 @@ void play_song_list(song_list_ll *queue) {
 
     while (1) { 
         printf("Playing song: %s\n", queue->name);
+        invalid:
         printf("Enter command (NEXT, PREV, REPLAY, EXIT): ");
         scanf("%s", cmd);
         int c; 
         while ((c = getchar()) != '\n' && c != EOF);
         if (strcmp("NEXT", cmd) == 0) queue = queue->next;
-        else if (strcmp("PREVIOUS", cmd) == 0) queue = queue->prev;
+        else if (strcmp("PREV", cmd) == 0) queue = queue->prev;
         else if (strcmp("REPLAY", cmd) == 0) {}
         else if (strcmp("EXIT", cmd) == 0) return;
-        else printf("Invalid Input\n");
+        else {printf("Invalid Input\n");goto invalid;}
     }
 }
 

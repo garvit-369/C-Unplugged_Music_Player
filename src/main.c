@@ -60,6 +60,8 @@ int main() {
         goto display_func;
     }
     else if (cmd==2) {
+        fclose(album_list);
+        FILE *album_list = fopen("src/albums/albums_list.txt","r+");
         print_album_list(album_list);
         printf("\nSuccessfully Executed!!\n");
         printf("-------------------------------------------------------------------------------------------------------------\n\n");
@@ -290,13 +292,16 @@ int main() {
             album_index = -1;
         }
         char location[270] = "src/albums/";
-        char name[100]={0};
+        char name[100];
         memset(name, 0, sizeof(char));
         item_name_from_index(album_list,album_index,name);
         album_location_from_index(album_list,album_index,location);
+        fclose(album_list);
         remove(location);
-        remove_song("src/albums/albums_list.csv",album_index);
-        char arr[400]={0};
+        remove_song("src/albums/albums_list.txt",album_index);
+        album_list = fopen("src/albums/albums_list.txt","r+");
+        char arr[400];
+        memset(arr, 0, sizeof(char));
         sprintf(arr,"Deleted album %s",name);
         add_log(history,arr);
         printf("-------------------------------------------------------------------------------------------------------------\n\n");

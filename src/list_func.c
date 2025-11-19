@@ -16,7 +16,7 @@ void print_album_list(FILE *file) {
         if (strlen(step)<=1) {continue;}
         char *token=strtok(step,",\n");
         lines_read++;
-        printf("%d) %s\n",count,token);
+        printf("%2d) %s\n",count,token);
         count++;
     }
 
@@ -53,7 +53,7 @@ void print_list(FILE *file) {
 
         int duration = atoi(duration_str);
 
-        printf("%d) %s\t\t%s\t\t%d\n", count, name, artist, duration);
+        printf("%2d) %s\t\t%s\t\t%d\n", count, name, artist, duration);
         count++;
     }
 
